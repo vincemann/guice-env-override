@@ -1,4 +1,4 @@
-# guice-override-bindings
+# guice-env-override
 Allows you to overwrite guice bindings via env var.  
 This is useful for real integration testing -> you execute your program as jar/jlink-image/artifact in your tests.  
 ## example usage  
