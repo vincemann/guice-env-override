@@ -1,5 +1,5 @@
 module guice.override.bindings {
-    exports com.github.vincemann.guice.override;
+    exports com.github.vincemann.guice.env.override;
 
     requires com.google.guice;
     requires org.slf4j;

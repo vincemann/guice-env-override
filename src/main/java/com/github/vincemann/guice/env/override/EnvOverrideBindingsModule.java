@@ -1,4 +1,4 @@
-package com.github.vincemann.guice.override;
+package com.github.vincemann.guice.env.override;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.reflect.TypeToken;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * Accepts custom bindings ({@link Binding}) via given env var.
- * Just serialize a List of Bindings into json using gson object created via {@link OverrideBindingsGsonFactory#create()}.
+ * Just serialize a List of Bindings into json using gson object created via {@link EnvOverrideBindingsGsonFactory#create()}.
  * Bindings also accept a List of string args that can be injected via guice with specific qualifier.
  * <p>
  * Example:
@@ -98,16 +98,16 @@ public class EnvOverrideBindingsModule extends AbstractModule {
 
     private final Module baseModule;
     private final String envVar;
-    private final OverrideBindingsGsonFactory overrideBindingsGsonFactory;
+    private final EnvOverrideBindingsGsonFactory overrideBindingsGsonFactory;
 
-    public EnvOverrideBindingsModule(Module baseModule, String envVar, OverrideBindingsGsonFactory overrideBindingsGsonFactory) {
+    public EnvOverrideBindingsModule(Module baseModule, String envVar, EnvOverrideBindingsGsonFactory overrideBindingsGsonFactory) {
         this.baseModule = baseModule;
         this.envVar = envVar;
         this.overrideBindingsGsonFactory = overrideBindingsGsonFactory;
     }
 
     public EnvOverrideBindingsModule(Module baseModule, String envVar) {
-        this(baseModule, envVar, new DefaultOverrideBindingsGsonFactory());
+        this(baseModule, envVar, new DefaultEnvOverrideBindingsGsonFactory());
     }
 
     @Override

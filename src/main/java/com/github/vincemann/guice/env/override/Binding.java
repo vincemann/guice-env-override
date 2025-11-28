@@ -1,4 +1,4 @@
-package com.github.vincemann.guice.override;
+package com.github.vincemann.guice.env.override;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

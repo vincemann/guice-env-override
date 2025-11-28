@@ -1,4 +1,4 @@
-package com.github.vincemann.guice.override;
+package com.github.vincemann.guice.env.override;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
  * @author vincemann
  
  */
-public class DefaultOverrideBindingsGsonFactory implements OverrideBindingsGsonFactory {
+public class DefaultEnvOverrideBindingsGsonFactory implements EnvOverrideBindingsGsonFactory {
 
 
     protected GsonBuilder gsonBuilder(){
