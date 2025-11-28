@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.vincemann'
-version = '1.0.0'
+version = '0.0.1'
 
 repositories {
     mavenCentral()
@@ -12,8 +12,9 @@ repositories {
 
 dependencies {
     api ('com.google.inject:guice:7.0.0')
-    implementation 'org.slf4j:slf4j-api:1.7.36'
     api 'com.google.code.gson:gson:2.10.1'
+
+    implementation 'org.slf4j:slf4j-api:2.0.17'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -23,13 +24,15 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifactId = "guice-override-bindings"
         }
     }
 }
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withSourcesJar()
+    withJavadocJar()
 }
 
 test {

@@ -11,13 +11,15 @@ import com.google.inject.spi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Accepts custom bindings ({@link Binding}) via given env var.
- * Just serialize a List of Bindings into json using gson object created via {@link GsonFactory#create()}.
+ * Just serialize a List of Bindings into json using gson object created via {@link OverrideBindingsGsonFactory#create()}.
  * Bindings also accept a List of string args that can be injected via guice with specific qualifier.
  * <p>
  * Example:
@@ -96,16 +98,16 @@ public class EnvOverrideBindingsModule extends AbstractModule {
 
     private final Module baseModule;
     private final String envVar;
-    private final GsonFactory gsonFactory;
+    private final OverrideBindingsGsonFactory overrideBindingsGsonFactory;
 
-    public EnvOverrideBindingsModule(Module baseModule, String envVar, GsonFactory gsonFactory) {
+    public EnvOverrideBindingsModule(Module baseModule, String envVar, OverrideBindingsGsonFactory overrideBindingsGsonFactory) {
         this.baseModule = baseModule;
         this.envVar = envVar;
-        this.gsonFactory = gsonFactory;
+        this.overrideBindingsGsonFactory = overrideBindingsGsonFactory;
     }
 
     public EnvOverrideBindingsModule(Module baseModule, String envVar) {
-        this(baseModule, envVar, new DefaultGsonFactory());
+        this(baseModule, envVar, new DefaultOverrideBindingsGsonFactory());
     }
 
     @Override
@@ -114,19 +116,18 @@ public class EnvOverrideBindingsModule extends AbstractModule {
         if (customBindings == null)
             return;
 
-        log.debug("bindings string: {}", customBindings);
-        List<Binding> bindings = gsonFactory.create().fromJson(customBindings, new BindingListType());
+        log.debug("bindings json string: {}", customBindings);
+        List<Binding> bindings = overrideBindingsGsonFactory.create().fromJson(customBindings, new BindingListType());
         log.debug("bindings: {}", bindings);
         for (Binding binding : bindings) {
             log.debug("configuring binding: {}", binding);
             List<String> args = binding.getArgs();
-            if (args != null && !args.isEmpty()) {
-                String argsQualifier = String.format("%sArgs", binding.getImpl().getSimpleName());
-                bind(new TypeLiteral<List<String>>() {
-                })
-                        .annotatedWith(Names.named(argsQualifier))
-                        .toInstance(args);
-            }
+            if (args == null) args = new ArrayList<>();
+            String argsQualifier = String.format("%sArgs", binding.getImpl().getSimpleName());
+            bind(new TypeLiteral<List<String>>() {
+            })
+                    .annotatedWith(Names.named(argsQualifier))
+                    .toInstance(args);
 
             Object implInstance = binding.getImplInstance();
             if (binding.getName() == null) {
@@ -151,8 +152,7 @@ public class EnvOverrideBindingsModule extends AbstractModule {
                 Map<Key<?>, Class<?>> originalBindings = extractOriginalBindings(baseModule);
                 Class<?> originalImpl = originalBindings.get(Key.get(binding.getIntf()));
                 Preconditions.checkState(originalImpl != null,
-                        "Did not find original impl for if %s. " +
-                                "Have you bound a provider (unsupported)? ", binding.getIntf());
+                        "Did not find original impl for if %s", binding.getIntf());
                 log.debug("binding original implementation: {} with name 'original'", originalImpl);
                 bind(binding.getIntf())
                         .annotatedWith(Names.named("original"))
@@ -193,7 +193,7 @@ public class EnvOverrideBindingsModule extends AbstractModule {
                             // For bind(A.class).toProvider(provider)
                             // This is harder - we'd need to instantiate to know the actual type
                             // todo could introduce typeAwareProvider interface here
-                            log.trace("Provider binding found for {}, cannot determine implementation class", key);
+                            log.debug("Provider binding found for {}, cannot determine implementation class", key);
                             return null;
                         }
 
@@ -201,7 +201,7 @@ public class EnvOverrideBindingsModule extends AbstractModule {
                         public Void visit(ProviderKeyBinding<? extends T> binding) {
                             // For bind(A.class).toProvider(ProviderClass.class)
                             // todo could introduce typeAwareProvider interface here
-                            log.trace("Provider key binding found for {}, cannot determine implementation class", key);
+                            log.debug("Provider key binding found for {}, cannot determine implementation class", key);
                             return null;
                         }
 

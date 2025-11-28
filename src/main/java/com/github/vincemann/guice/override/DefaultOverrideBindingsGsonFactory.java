@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
  * @author vincemann
  
  */
-public class DefaultGsonFactory implements GsonFactory{
+public class DefaultOverrideBindingsGsonFactory implements OverrideBindingsGsonFactory {
 
 
     protected GsonBuilder gsonBuilder(){

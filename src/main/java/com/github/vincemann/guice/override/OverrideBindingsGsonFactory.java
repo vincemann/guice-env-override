@@ -6,7 +6,7 @@ import com.google.gson.Gson;
  * @author vincemann
  
  */
-public interface GsonFactory {
+public interface OverrideBindingsGsonFactory {
 
     Gson create();
 }
