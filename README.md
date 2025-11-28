@@ -1,6 +1,6 @@
 # guice-env-override
 Allows you to overwrite guice bindings via env var.  
-This is useful for real integration testing -> you execute your program as jar/jlink-image/artifact in your tests.  
+This is useful for artifact integration testing -> you execute your program as jar/jlink-image/artifact in your tests.  
 ## example usage  
 ### test
 ```java
@@ -8,8 +8,8 @@ This is useful for real integration testing -> you execute your program as jar/j
 @Test
 public void myTest(){
   // we dont want alert popups in test
-  Binding binding = Binding.Builder.bind(AlertDisplayer.class)
-       .to(SilentAlertDisplayer.class)
+  Binding binding = Binding.Builder.bind(AlertDialog.class)
+       .to(SilentAlertDialog.class)
        .build();
   
   List<Binding> bindings = List.of(binding);
@@ -43,6 +43,7 @@ public static void main(String[] args) {
 
 ```
 
+## 
 
 
 ## complex example  
@@ -53,16 +54,13 @@ public static void main(String[] args) {
 public void myTest(){
   // we want short alert popups in test that autoclose and the alert messages should be saved to file
   Path alertFilePath = Files.createTempFile(...);
-  Binding alertBinding = Binding.Builder.bind(AlertDisplayer.class)
-       .to(TestAlertDisplayer.class)
+  Binding alertBinding = Binding.Builder.bind(AlertDialog.class)
+       .to(TestAlertDialog.class)
        .withArgs(alertFilePath.toString())
        .injectOriginal()
        .build();
   
-  List<Binding> bindings = new ArrayList();
-  bindings.add(alertBinding);
-  
-  
+  List<Binding> bindings = List.of(binding);
   String jsonBindings = new DefaultEnvOverrideBindingsGsonFactory().create().toJson(bindings);
 
   // you dont need to use ProcessBuilder, this ist just a demonstration
